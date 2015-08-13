@@ -1,7 +1,12 @@
 #!/bin/sh
 # iconifier_script.sh
 # Author: Ronny Meißner
-# A bash to crop card graphics. Used ImageMagick, Inkscape and pngcrush.
+#
+# A bash script to render pngs files for Android or iOS.
+# Require tools:
+# 	- ImageMagick
+#   - Inkscape
+#   - pngcrush
 #
 # Usage: ldpi mdpi hdpi xhdpi xxhdpi xxxhdpi
 
