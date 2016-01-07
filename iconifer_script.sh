@@ -8,7 +8,6 @@
 #   - Inkscape
 #   - pngcrush
 #
-# Usage: ldpi mdpi hdpi xhdpi xxhdpi xxxhdpi
 
 source bashUtils/sub_script/text_helper.sh
 source bashUtils/sub_script/dir_helper.sh
@@ -61,9 +60,11 @@ EXPORT="$pwd/EXPORT"
 IMPORT="$pwd/IMPORT"
 
 #clear
-try rm -rf ${EXPORT}
+try rm -rf ${EXPORT}/draw*
 
-fontcustom compile -h ${IMPORT} -n "icon_font" -o "${EXPORT}"
+#recreate
+createDir ${EXPORT}
+
 
 find "${IMPORT}" -type f -iname "*.svg"  | while read file ; do
 	Test $file
@@ -75,11 +76,17 @@ doConvertAndroid "$IMPORT/ic_nav_lightalert_50.svg" "$EXPORT" "1024" "50"
 # define target
 ANDROID_TARGET="TestProjectAndroid/app/src/main/res"
 
-if [ -e "${EXPORT}" ]; then
+# copy
+if [ -e "${EXPORT}" -o -e ${ANDROID_TARGET}  ]; then
 	print_green "copy image files"
- 	rsync -arcuP "$EXPORT/" --exclude="*.*" --include="*.png" --include="*.PNG" "${ANDROID_TARGET}"
+	rsync -arcuP "$EXPORT/" --include="*.png" --include="*.PNG" --exclude="*.*"  "${ANDROID_TARGET}"
+fi
 
+FONTNAME="icon_font"
+fontcustom compile -h "${IMPORT}" -n "${FONTNAME}" -o "${EXPORT}"
+
+if [ -e "${EXPORT}/${FONTNAME}.ttf" ]; then
 	print_green "copy font files"
- 	createDir "TestProjectAndroid/app/src/main/res/asset/"
- 	rsync "$EXPORT/" --exclude="*.*" --exclude="." --include="*.ttf" --include="*.TTF" "${ANDROID_TARGET}/asset/"
+	createDir "${ANDROID_TARGET}/asset/"
+	rsync -arcuP "$EXPORT/"  --include="*.ttf" --include="*.TTF" --exclude="*" "${ANDROID_TARGET}/asset/"
 fi
